@@ -38,5 +38,4 @@ public:
     vector<ofImage> drawOrder;
     ofImage mainImage, saveImage;
     int wLength, hLength;
-    ofFbo fbo;
 };

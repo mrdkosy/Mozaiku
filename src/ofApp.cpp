@@ -4,16 +4,8 @@
 void ofApp::setup(){
     ofBackground(255);
     ofToggleFullscreen();
-    mainImage.load("1320ec21.gif");
+    mainImage.load("1320ec21.24bit.jpg");
     imageSetup(); //素材のロード、トリミング、色解析、並べ替え
-    
-    fbo.allocate(ofGetWidth(), ofGetHeight());
-    fbo.begin();
-    mainImage.draw(mainImage.getWidth(), 0, mainImage.getWidth(), mainImage.getHeight());
-    for(int i=0; i<drawOrder.size(); i++){
-        drawOrder[i].draw(PIXEL*(i%wLength), PIXEL*(i/hLength), PIXEL, PIXEL);
-    }
-    fbo.end();
 }
 //--------------------------------------------------------------
 void ofApp::imageSetup(){
@@ -68,7 +60,7 @@ ofImage* ofApp::imageTrimming(string name){
 ofColor ofApp::getColor(ofImage image){
     ofPixels pixels;
     pixels = image.getPixels(); //画像をpixelにする
-    int skip = 20;
+    int skip = 1;
     ofVec3f averageColor = ofVec3f(0,0,0);
     int count = 0;
     for(int x=0; x<image.getWidth(); x+=skip){
@@ -148,7 +140,7 @@ void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<of
         for(int x=0; x<mainImg.getWidth(); x+=skip){
             ofColor c = pixels.getColor(x, y);
             c.set(c.getHueAngle(), c.getSaturation(), c.getBrightness());
-            c.r = ofMap(c.getHueAngle(), 0, 360, 0, 255);
+//            c.r = ofMap(c.getHueAngle(), 0, 360, 0, 255);
             ofImage img;
             img = binarySearch(list, c);
             order.push_back(img);
@@ -160,67 +152,24 @@ void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<of
     }
 }
 //--------------------------------------------------------------
-void ofApp::update(){
-    
-}
-
-//--------------------------------------------------------------
 void ofApp::draw(){
     ofScale(1.5, 1.5);
-    fbo.draw(0, 0);
-}
-
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key){
+    mainImage.draw(0, 0, mainImage.getWidth(), mainImage.getHeight());
+    for(int i=0; i<drawOrder.size(); i++){
+        drawOrder[i].draw(PIXEL*(i%(wLength)), PIXEL*(i/hLength), PIXEL, PIXEL);
+    }
     
 }
-
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){
-    
-}
+void ofApp::update(){}
+void ofApp::keyPressed(int key){}
+void ofApp::keyReleased(int key){}
+void ofApp::mouseMoved(int x, int y ){}
+void ofApp::mouseDragged(int x, int y, int button){}
+void ofApp::mousePressed(int x, int y, int button){}
+void ofApp::mouseReleased(int x, int y, int button){}
+void ofApp::mouseEntered(int x, int y){}
+void ofApp::mouseExited(int x, int y){}
+void ofApp::windowResized(int w, int h){}
+void ofApp::gotMessage(ofMessage msg){}
+void ofApp::dragEvent(ofDragInfo dragInfo){}
