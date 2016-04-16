@@ -30,9 +30,8 @@ public:
     
     ofColor getColor(ofImage image);
     void imageSetup();
-    ofImage binarySearch(vector<ImageList> & list, ofColor request);
-    void quickSort(vector<ImageList> & list, int begin, int end);
     void imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<ofImage> & order);
+    ofImage min(vector<ImageList> & list, ofColor request);
     ofImage* imageTrimming(string name);
     vector<ImageList> imageList;
     vector<ofImage> drawOrder;
