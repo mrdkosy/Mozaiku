@@ -19,20 +19,20 @@ void ofApp::setup(){
 void ofApp::imageSetup(){
     
     ofDirectory dir;
-    dir.open("newimg");
+    dir.open("img");
     dir.listDir();
     vector<ofFile> fileNamebuffer = dir.getFiles(); //データのロード
     for(int i=0; i<fileNamebuffer.size(); i++){
         
         ImageList l;
-        //        l.image = *imageTrimming(fileNamebuffer[i].getFileName()); //画像のトリミング
-        ofImage m;
-        m.load("newimg/"+fileNamebuffer[i].getFileName());
-        l.image = m;
+        l.image = *imageTrimming(fileNamebuffer[i].getFileName()); //画像のトリミング
+        //        ofImage m;
+        //        m.load("newimg/"+fileNamebuffer[i].getFileName());
+        //        l.image = m;
         l.color = getColor(l.image); //色種6
         imageList.push_back(l);
         
-//        usleep(10);
+        usleep(10);
     }
     
     //色データの並び替え
@@ -119,8 +119,6 @@ ofImage ofApp::binarySearch(vector<ImageList> & list, ofColor request){
         int center =( head + tail )/2;
         ofColor centerVal = list[center].color;
         
-        
-        
         if( abs(centerVal.r - request.r) < 5 ) {
             img.push_back(list[center].image);
         }else if( abs(centerVal.r - request.r) < 10 ) {
@@ -150,6 +148,7 @@ void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<of
         for(int x=0; x<mainImg.getWidth(); x+=skip){
             ofColor c = pixels.getColor(x, y);
             c.set(c.getHueAngle(), c.getSaturation(), c.getBrightness());
+            c.r = ofMap(c.getHueAngle(), 0, 360, 0, 255);
             ofImage img;
             img = binarySearch(list, c);
             order.push_back(img);
