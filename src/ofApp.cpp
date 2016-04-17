@@ -4,7 +4,7 @@
 void ofApp::setup(){
     ofBackground(255);
     ofToggleFullscreen();
-    mainImage.load("1320ec21.24bit.jpg");
+    mainImage.load("samplecalender-3-5_640.jpg");
     imageSetup(); //素材のロード、トリミング、色解析、並べ替え
 }
 //--------------------------------------------------------------
@@ -21,7 +21,7 @@ void ofApp::imageSetup(){
         l.color = getColor(l.image); //色種6
         imageList.push_back(l);
         
-        usleep(10);
+        usleep(50);
     }
     
     //探索
@@ -36,12 +36,14 @@ ofImage* ofApp::imageTrimming(string name){
     float h = img.getHeight();
     
     img.mirror(true, false);
-    float size = 500;
+    float size = 180;
     if(w > h){
-        img.draw(0, size/1.87, w*size/h, size);
+        img.draw(0, size/.305, w*size/h, size);
+        //        img.draw(0, 0, w*size/h, size);
     }
     else{
-        img.draw(0, size/1.87, size, h*size/w);
+        img.draw(0, size/.305, w*size/h, size);
+        //        img.draw(0, 0, size, h*size/w);
     }
     
     saveImage.grabScreen(0, 0, size, size);
@@ -106,6 +108,7 @@ void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<of
 //--------------------------------------------------------------
 ofImage ofApp::min(vector<ImageList> & list, ofColor request){
     
+    int range = 5;
     ofImage img;
     int min = 1000;
     
@@ -116,12 +119,14 @@ ofImage ofApp::min(vector<ImageList> & list, ofColor request){
             min = n;
         }
     }
+    int n = ofRandom(range);
     return img;
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofScale(1.5, 1.5);
+    ofScale(1, 1.1);
+//    ofScale(1.18, 1.18);
     mainImage.draw(mainImage.getWidth(), 0, mainImage.getWidth(), mainImage.getHeight());
     for(int i=0; i<drawOrder.size(); i++){
         drawOrder[i].draw(PIXEL*(i%(wLength)), PIXEL*(i/hLength), PIXEL, PIXEL);
