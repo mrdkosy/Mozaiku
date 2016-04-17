@@ -4,7 +4,7 @@
 void ofApp::setup(){
     ofBackground(255);
     ofToggleFullscreen();
-    mainImage.load("samplecalender-3-5_640.jpg");
+    mainImage.load("1320ec21.24bit.jpg");
     imageSetup(); //素材のロード、トリミング、色解析、並べ替え
 }
 //--------------------------------------------------------------
@@ -113,7 +113,9 @@ ofImage ofApp::min(vector<ImageList> & list, ofColor request){
     int min = 1000;
     
     for( auto i: list ){
-        int n = abs(i.color.r - request.r) + abs(i.color.g - request.g) + abs(i.color.g - request.g);
+        //        int n = abs(i.color.r - request.r) + abs(i.color.g - request.g) + abs(i.color.g - request.g);
+        int n = abs(i.color.getHue() - request.getHue()) + abs(i.color.getSaturation() - request.getSaturation()) +
+        abs(i.color.getBrightness()- request.getBrightness());
         if ( n < min){
             img = i.image;
             min = n;
@@ -125,9 +127,9 @@ ofImage ofApp::min(vector<ImageList> & list, ofColor request){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofScale(1, 1.1);
-//    ofScale(1.18, 1.18);
+    ofScale(1.5, 1.5);
     mainImage.draw(mainImage.getWidth(), 0, mainImage.getWidth(), mainImage.getHeight());
+    ofScale(1, 1.25);
     for(int i=0; i<drawOrder.size(); i++){
         drawOrder[i].draw(PIXEL*(i%(wLength)), PIXEL*(i/hLength), PIXEL, PIXEL);
     }

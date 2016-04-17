@@ -8,7 +8,7 @@ typedef struct{
     ofColor color;
 }ImageList;
 
-const int PIXEL = 15;
+const int PIXEL = 7;
 class ofApp : public ofBaseApp{
     
 public:
