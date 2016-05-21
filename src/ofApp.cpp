@@ -4,7 +4,7 @@
 void ofApp::setup(){
     ofBackground(255);
     ofToggleFullscreen();
-    mainImage.load("1320ec21.24bit.jpg");
+    mainImage.load("sh_60181.png");
     imageSetup(); //素材のロード、トリミング、色解析、並べ替え
 }
 //--------------------------------------------------------------
@@ -21,8 +21,9 @@ void ofApp::imageSetup(){
         l.color = getColor(l.image); //色種6
         imageList.push_back(l);
         
-        usleep(50);
+        usleep(10);
     }
+    
     
     //探索
     imageAllocation(imageList, mainImage, drawOrder);
@@ -39,11 +40,9 @@ ofImage* ofApp::imageTrimming(string name){
     float size = 180;
     if(w > h){
         img.draw(0, size/.305, w*size/h, size);
-        //        img.draw(0, 0, w*size/h, size);
     }
     else{
         img.draw(0, size/.305, w*size/h, size);
-        //        img.draw(0, 0, size, h*size/w);
     }
     
     saveImage.grabScreen(0, 0, size, size);
@@ -81,6 +80,7 @@ void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<of
     int skip = PIXEL;
     for(int y=0; y<mainImg.getHeight(); y+=skip){
         for(int x=0; x<mainImg.getWidth(); x+=skip){
+
             
             //------------------
             ofColor c;
@@ -101,6 +101,7 @@ void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<of
             img = min(list, ofColor(average.x, average.y, average.z));
             order.push_back(img);
             if(y == 0) wLength++;
+            
         }
         hLength++;
     }
@@ -108,28 +109,26 @@ void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<of
 //--------------------------------------------------------------
 ofImage ofApp::min(vector<ImageList> & list, ofColor request){
     
-    int range = 5;
     ofImage img;
     int min = 1000;
     
     for( auto i: list ){
-        //        int n = abs(i.color.r - request.r) + abs(i.color.g - request.g) + abs(i.color.g - request.g);
-        int n = abs(i.color.getHue() - request.getHue()) + abs(i.color.getSaturation() - request.getSaturation()) +
+        int n = abs(i.color.r - request.r) + abs(i.color.g - request.g) + abs(i.color.b - request.b);
+        int m = abs(i.color.getHue() - request.getHue()) + abs(i.color.getSaturation() - request.getSaturation()) +
         abs(i.color.getBrightness()- request.getBrightness());
-        if ( n < min){
+        if(m+n < min){
             img = i.image;
-            min = n;
+            min = m+n;
         }
+        
     }
-    int n = ofRandom(range);
+    
     return img;
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofScale(1.5, 1.5);
     mainImage.draw(mainImage.getWidth(), 0, mainImage.getWidth(), mainImage.getHeight());
-    ofScale(1, 1.25);
     for(int i=0; i<drawOrder.size(); i++){
         drawOrder[i].draw(PIXEL*(i%(wLength)), PIXEL*(i/hLength), PIXEL, PIXEL);
     }

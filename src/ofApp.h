@@ -8,7 +8,8 @@ typedef struct{
     ofColor color;
 }ImageList;
 
-const int PIXEL = 7;
+const int PIXEL = 10;
+#define range 5
 class ofApp : public ofBaseApp{
     
 public:
@@ -37,4 +38,5 @@ public:
     vector<ofImage> drawOrder;
     ofImage mainImage, saveImage;
     int wLength, hLength;
+    
 };
