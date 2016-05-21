@@ -4,7 +4,7 @@
 void ofApp::setup(){
     ofBackground(255);
     ofToggleFullscreen();
-    mainImage.load("1320ec21.24bit.jpg");
+    mainImage.load("sh_60181.png");
     imageSetup(); //素材のロード、トリミング、色解析、並べ替え
 }
 //--------------------------------------------------------------
@@ -18,17 +18,12 @@ void ofApp::imageSetup(){
         
         ImageList l;
         l.image = *imageTrimming(fileNamebuffer[i].getFileName()); //画像のトリミング
-        //        ofImage m;
-        //        m.load("newimg/"+fileNamebuffer[i].getFileName());
-        //        l.image = m;
         l.color = getColor(l.image); //色種6
         imageList.push_back(l);
         
         usleep(10);
     }
     
-    //色データの並び替え
-    quickSort(imageList, 0, imageList.size()-1);
     
     //探索
     imageAllocation(imageList, mainImage, drawOrder);
@@ -42,12 +37,12 @@ ofImage* ofApp::imageTrimming(string name){
     float h = img.getHeight();
     
     img.mirror(true, false);
-    float size = 500;
+    float size = 180;
     if(w > h){
-        img.draw(0, size/1.87, w*size/h, size);
+        img.draw(0, size/.305, w*size/h, size);
     }
     else{
-        img.draw(0, size/1.87, size, h*size/w);
+        img.draw(0, size/.305, w*size/h, size);
     }
     
     saveImage.grabScreen(0, 0, size, size);
@@ -57,10 +52,10 @@ ofImage* ofApp::imageTrimming(string name){
     
 }
 //--------------------------------------------------------------
-ofColor ofApp::getColor(ofImage image){
+ofColor ofApp::getColor(ofImage image){ //素材画像の色取得
     ofPixels pixels;
     pixels = image.getPixels(); //画像をpixelにする
-    int skip = 1;
+    int skip = 10;
     ofVec3f averageColor = ofVec3f(0,0,0);
     int count = 0;
     for(int x=0; x<image.getWidth(); x+=skip){
@@ -73,60 +68,7 @@ ofColor ofApp::getColor(ofImage image){
     }
     averageColor /= ofVec3f(count);
     ofColor c = ofColor(averageColor.x, averageColor.y, averageColor.z);
-    ofColor hsb = ofColor(c.getHueAngle(), c.getSaturation(), c.getBrightness());
-    hsb.r = ofMap(c.getHueAngle(), 0, 360, 0, 255);
-    return hsb;
-}
-//--------------------------------------------------------------
-void ofApp::quickSort(vector<ImageList> & list, int begin, int end){
-    int pivot = list[ (begin+end)/2 ].color.r;
-    ofColor temp;
-    int i = begin, j = end;
-    
-    while (1) {
-        while (list[i].color.r < pivot) { ++i; };
-        while (list[j].color.r > pivot) { --j; };
-        if(i >= j)break;
-        
-        //入れ替え
-        temp = list[i].color;
-        list[i].color = list[j].color;
-        list[j].color = temp;
-        i++;
-        j--;
-    }
-    
-    //pivotの左側をsort
-    if(begin < i-1){ quickSort(list, begin, i-1); };
-    if(j+1 < end){ quickSort(list, j+1, end); };
-    
-}
-//--------------------------------------------------------------
-ofImage ofApp::binarySearch(vector<ImageList> & list, ofColor request){
-    int head = 0;
-    int tail = list.size();
-    vector<ofImage>img;
-    
-    while( head <= tail ) {
-        int center =( head + tail )/2;
-        ofColor centerVal = list[center].color;
-        
-        if( abs(centerVal.r - request.r) < 5 ) {
-            img.push_back(list[center].image);
-        }else if( abs(centerVal.r - request.r) < 10 ) {
-            img.push_back(list[center].image);
-        }else{
-            img.push_back(list[(int)ofRandom(list.size())].image);
-        }
-        if( centerVal.r < request.r ) {
-            head = center + 1;
-        }else {
-            tail = center - 1;
-        }
-    }
-    
-    int n = ofRandom(img.size());
-    return img[n];
+    return c;
 }
 //--------------------------------------------------------------
 void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<ofImage> & order){
@@ -138,26 +80,60 @@ void ofApp::imageAllocation(vector<ImageList> & list, ofImage mainImg, vector<of
     int skip = PIXEL;
     for(int y=0; y<mainImg.getHeight(); y+=skip){
         for(int x=0; x<mainImg.getWidth(); x+=skip){
-            ofColor c = pixels.getColor(x, y);
-            c.set(c.getHueAngle(), c.getSaturation(), c.getBrightness());
-//            c.r = ofMap(c.getHueAngle(), 0, 360, 0, 255);
-            ofImage img;
-            img = binarySearch(list, c);
-            order.push_back(img);
+
             
-            if(y == 0)wLength++;
+            //------------------
+            ofColor c;
+            int skip = 2;
+            ofVec3f average = ofVec3f(0);
+            int count = 0;
+            for(int h=0; h<PIXEL; h+=skip){
+                for(int w=0; w<PIXEL; w+=skip){
+                    c = pixels.getColor(x+w, y+h);
+                    average += ofVec3f(c.r, c.g, c.b);
+                    count ++;
+                }
+            }
+            average /= count;
+            //------------------
+            
+            ofImage img;
+            img = min(list, ofColor(average.x, average.y, average.z));
+            order.push_back(img);
+            if(y == 0) wLength++;
+            
         }
-        
         hLength++;
     }
 }
 //--------------------------------------------------------------
+ofImage ofApp::min(vector<ImageList> & list, ofColor request){
+    
+    ofImage img;
+    int min = 1000;
+    
+    for( auto i: list ){
+        int n = abs(i.color.r - request.r) + abs(i.color.g - request.g) + abs(i.color.b - request.b);
+        int m = abs(i.color.getHue() - request.getHue()) + abs(i.color.getSaturation() - request.getSaturation()) +
+        abs(i.color.getBrightness()- request.getBrightness());
+        if(m+n < min){
+            img = i.image;
+            min = m+n;
+        }
+        
+    }
+    
+    return img;
+}
+//--------------------------------------------------------------
 void ofApp::draw(){
-    ofScale(1.5, 1.5);
-    mainImage.draw(0, 0, mainImage.getWidth(), mainImage.getHeight());
+    
+    mainImage.draw(mainImage.getWidth(), 0, mainImage.getWidth(), mainImage.getHeight());
     for(int i=0; i<drawOrder.size(); i++){
         drawOrder[i].draw(PIXEL*(i%(wLength)), PIXEL*(i/hLength), PIXEL, PIXEL);
     }
+    
+    ofSetWindowTitle(ofToString(ofGetFrameRate()));
     
 }
 //--------------------------------------------------------------
